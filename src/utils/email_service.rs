@@ -7,7 +7,7 @@ use crate::utils::errors::ServiceError;
 pub fn send_mail(invitation: &Invitation) -> Result<(), ServiceError> {
     let sending_username: String = std::env::var("USERNAME").expect("USERNAME must be set.");
     let sending_password: String = std::env::var("PASSWORD").expect("USERNAME must be set.");
-    let sending_host: String = std::env::var("HOST").expect("USERNAME must be set.");
+    let sending_host = std::env::var("HOST").expect("USERNAME must be set.");
 
     let mail_builder = Message::builder()
         .from("NoBody <nobody@domain.tld>".parse().unwrap())
@@ -20,14 +20,20 @@ pub fn send_mail(invitation: &Invitation) -> Result<(), ServiceError> {
     let creds = Credentials::new(sending_username, sending_password);
 
     // Open a remote connection to gmail
-    let mailer = SmtpTransport::relay(sending_host)
+    let mailer = SmtpTransport::relay(&sending_host)
         .unwrap()
         .credentials(creds)
         .build();
 
     // Send the email
     match mailer.send(&mail_builder) {
-        Ok(_) => println!("Email sent successfully!"),
-        Err(e) => panic!("Could not send email: {:?}", e),
+        Ok(_) => {
+            println!("Email sent successfully!");
+            Ok(())
+        }
+        Err(e) => {
+            println!("Could not send email: {:?}", e);
+            Err(ServiceError::InternalServerError)
+        }
     }
 }

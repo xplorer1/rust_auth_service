@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate diesel;
+extern crate argon2;
 
 mod models;
 mod schema;
@@ -34,7 +35,7 @@ async fn main() -> std::io::Result<()> {
             //enable loggger
             .wrap(middleware::Logger::default())
             .wrap(IdentityService::new(
-                CookieIdentityPolicy::new(utils::SECRET_KEY.as_bytes())
+                CookieIdentityPolicy::new(utils::password_hash::SECRET_KEY.as_bytes())
                     .name("auth")
                     .path("/")
                     .domain(domain.as_str())
