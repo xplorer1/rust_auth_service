@@ -9,12 +9,25 @@ pub fn send_mail(invitation: &Invitation) -> Result<(), ServiceError> {
     let sending_password: String = std::env::var("PASSWORD").expect("USERNAME must be set.");
     let sending_host = std::env::var("HOST").expect("USERNAME must be set.");
 
+    let email_body = format!(
+        "Please click on the link below to complete registration. <br/>
+         <a href=\"http://localhost:3000/register.html?id={}&email={}\">
+         http://localhost:3030/register</a> <br>
+         your Invitation expires on <strong>{}</strong>",
+        invitation.id,
+        invitation.email,
+        invitation
+            .expires_at
+            .format("%I:%M %p %A, %-d %B, %C%y")
+            .to_string()
+    );
+
     let mail_builder = Message::builder()
-        .from("NoBody <nobody@domain.tld>".parse().unwrap())
-        .reply_to("Yuin <yuin@domain.tld>".parse().unwrap())
-        .to("Hei <hei@domain.tld>".parse().unwrap())
-        .subject("Happy new year")
-        .body(String::from("Be happy!"))
+        .from(sending_username.parse().unwrap())
+        .reply_to(sending_username.parse().unwrap())
+        .to(invitation.email.parse().unwrap())
+        .subject("Your invitation")
+        .body(email_body)
         .unwrap();
 
     let creds = Credentials::new(sending_username, sending_password);

@@ -1,6 +1,5 @@
 use actix_web::{error::BlockingError, web, HttpResponse};
 use diesel::{prelude::*, PgConnection};
-use serde::Deserialize;
 
 use crate::utils::{errors::ServiceError, responses::UserStruct, password_hash::hash_password, requests::UserData};
 use crate::models::{Invitation, Pool, User};
@@ -29,7 +28,7 @@ fn run_query(invitation_id: String, user_data: UserData, pool: web::Data<Pool>) 
         .filter(id.eq(invitation_id))
         .filter(email.eq(&user_data.email))
         .load::<Invitation>(conn)
-        .map_err(|_db_error| ServiceError::BadRequest("Invalid invitation".into()))
+        .map_err(|_db_error| ServiceError::BadRequest("Invalid email or invitation ID!".into()))
         .and_then(|mut result| {
             if let Some(invitation) = result.pop() {
                 //if invitation has not expired... 
@@ -46,6 +45,6 @@ fn run_query(invitation_id: String, user_data: UserData, pool: web::Data<Pool>) 
                 }
             }
 
-            Err(ServiceError::BadRequest("Invalid Invitation".into()))
+            Err(ServiceError::BadRequest("Invalid email or invitation ID!".into()))
         })
 }
