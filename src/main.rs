@@ -42,7 +42,7 @@ async fn main() -> std::io::Result<()> {
                     .max_age(86400) // 24 hours in secnods
                     .secure(false),
             ))
-            //limit the maximum amount of data that the server will accept
+            //limit the maximum size of data that the server will accept
             .data(web::JsonConfig::default().limit(4096))
             //handle everything under /api route
             .service(

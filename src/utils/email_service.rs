@@ -11,8 +11,8 @@ pub fn send_mail(invitation: &Invitation) -> Result<(), ServiceError> {
 
     let email_body = format!(
         "Please click on the link below to complete registration. <br/>
-         <a href=\"http://localhost:3000/register.html?id={}&email={}\">
-         http://localhost:3030/register</a> <br>
+         <a href=\"http://localhost:9100/register.html?id={}&email={}\">
+         http://localhost:9100/register</a> <br>
          your Invitation expires on <strong>{}</strong>",
         invitation.id,
         invitation.email,
